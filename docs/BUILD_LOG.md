@@ -26,3 +26,12 @@ Documented ADR-003 to ADR-005: Redis Streams topology with a single
 scorer consumer for ordering, Angular with SSR and the honest limits of
 SSR on a live dashboard, and two independent fraud signals with
 validation-derived thresholds. Still no application code.
+
+## Entry 4: Data model and event contract
+
+Wrote docs/DATA_MODEL.md and ADR-006 and ADR-007. The key lessons: use
+event time for windows so replays match live runs, compute features from
+prior state and update state afterwards, and share one feature function
+across training and live scoring behind a StateStore interface with a
+parity test. The scorer is kept blind to generator internals so the
+evaluation stays honest.

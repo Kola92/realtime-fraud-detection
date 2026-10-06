@@ -148,3 +148,54 @@ improvement.
 fired and kills explainability. Rules only misses novel fraud. Model
 only is unexplainable. Evaluate each signal alone and combined
 (ablation), which is also good article material.
+
+---
+
+## ADR-006: Event contract and time semantics
+
+**Status:** Accepted
+
+**Problem solved:** A versioned, validated contract between producer,
+scorer and API, and windows that behave identically in live, replay and
+training runs.
+
+**Decision:** Each stream entry carries `v` and one JSON `payload`.
+Pydantic validates strictly at the consumer: enums, bounded string
+lengths, lat/lon ranges, amount bounds. Invalid events go to `txn.dead`
+with a reason and never crash the scorer. All windows are computed from
+`occurred_at` (event time), never the wall clock. Money is integer
+minor units.
+
+**Traded away:** Redis cannot filter inside a JSON payload. Out-of-order
+events are not handled in v1: the producer emits in order per account,
+and this is a documented limitation.
+
+**What breaks if changed:** Wall-clock windows make replays and training
+disagree with live scoring. Float money introduces rounding drift.
+Skipping validation lets one malformed message poison the consumer
+group.
+
+---
+
+## ADR-007: Features from prior state, with train/serve parity
+
+**Status:** Accepted
+
+**Problem solved:** Train/serve skew and within-event leakage.
+
+**Decision:** Features are computed from state strictly before the
+current event, and state is updated only after scoring. A single
+`compute_features` function runs against a `StateStore` interface with
+two implementations: in-memory (batch training and evaluation) and
+Redis (live). A parity test feeds the same event sequence through both
+and asserts identical vectors. The feature schema hash is stored in the
+model artifact, and the scorer refuses to load a model whose hash does
+not match. The scorer sees only bank-visible profile fields and learns
+per-account baselines online.
+
+**Traded away:** An abstraction layer and a second state implementation
+to maintain. Slightly slower than hand-tuned Redis code.
+
+**What breaks if changed:** Two separate feature implementations drift
+silently. Counting the current event in its own window leaks signal.
+Giving the scorer generator internals makes every metric meaningless.
