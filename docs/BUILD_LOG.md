@@ -19,3 +19,10 @@ scripts and Dockerfiles survive Windows checkouts.
 
 Locked the backend language and the synthetic data strategy before
 writing application code. See ADR-001 and ADR-002 in DECISIONS.md.
+
+## Entry 3: Event backbone, frontend and detection design
+
+Documented ADR-003 to ADR-005: Redis Streams topology with a single
+scorer consumer for ordering, Angular with SSR and the honest limits of
+SSR on a live dashboard, and two independent fraud signals with
+validation-derived thresholds. Still no application code.
