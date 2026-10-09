@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+pydantic>=2
+redis
+numpy
+scikit-learn
+joblib
+tzdata
+
+[dev]
+pytest
+ruff

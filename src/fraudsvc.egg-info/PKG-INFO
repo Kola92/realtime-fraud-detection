@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: fraudsvc
+Version: 0.1.0
+Summary: Real-Time Fraud Detection Service
+Requires-Python: >=3.13
+Requires-Dist: fastapi
+Requires-Dist: uvicorn[standard]
+Requires-Dist: pydantic>=2
+Requires-Dist: redis
+Requires-Dist: numpy
+Requires-Dist: scikit-learn
+Requires-Dist: joblib
+Requires-Dist: tzdata
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
