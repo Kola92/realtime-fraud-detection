@@ -199,3 +199,28 @@ to maintain. Slightly slower than hand-tuned Redis code.
 **What breaks if changed:** Two separate feature implementations drift
 silently. Counting the current event in its own window leaks signal.
 Giving the scorer generator internals makes every metric meaningless.
+
+---
+
+## ADR-008: Normalize amounts to NGN with a static, versioned FX table
+
+**Status:** Accepted
+
+**Problem solved:** amount_minor in different currencies is not
+comparable (USD 100 is 10,000 cents, NGN 100 is 10,000 kobo). Features
+built on raw amount_minor mix currency noise into amount signals and
+corrupt per-account z-scores.
+
+**Decision:** The event keeps the original amount_minor and currency.
+The scorer derives amount_ngn_minor = amount_minor * rate, where rate
+comes from a static table with a version string (fx_version). All amount
+features and amount-based rules use amount_ngn_minor. The fx_version is
+recorded in the model artifact and in every ScoredEvent.
+
+**Traded away:** Real exchange-rate movement. Rates are illustrative
+constants, fixed so that training, replay and live scoring agree
+exactly and no external service is needed.
+
+**What breaks if changed:** Live FX rates make replays and training
+non-reproducible and add a failure dependency to the scoring path.
+Using raw amount_minor reintroduces the currency-mixing bug.

@@ -91,3 +91,12 @@ score_latency_ms. No label, ever.
 
 Scenario labels live only under `truth:{txn_id}` and in the evaluation
 output. The scorer and the API never read them.
+
+## Amendment 1: amount normalization (ADR-008)
+
+In section 5, every amount-based feature (log_amount, amount_zscore,
+log_sum_1h) is computed from amount_ngn_minor, not amount_minor. The
+account stats hash (section 4) accumulates ln(amount_ngn_minor). The
+ZSET members in acct:{id}:txns store amount_ngn_minor. ScoredEvent gains
+fx_version and amount_ngn_minor. The FX table is a versioned constant
+in core, for example NGN 1, USD 1500, GBP 1900, EUR 1650 (illustrative).

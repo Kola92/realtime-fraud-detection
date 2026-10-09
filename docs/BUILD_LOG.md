@@ -35,3 +35,15 @@ prior state and update state afterwards, and share one feature function
 across training and live scoring behind a StateStore interface with a
 parity test. The scorer is kept blind to generator internals so the
 evaluation stays honest.
+
+## Entry 5: A currency bug caught on paper, then rules and scenarios
+
+Reviewing the feature spec before writing code, we found that amount
+features mixed currencies: USD 100 is 10,000 cents while NGN 100 is
+10,000 kobo, so a raw amount_minor is not comparable across currencies.
+Fixed with ADR-008 (static, versioned FX table, amount_ngn_minor) and a
+DATA_MODEL amendment. This is the argument for schema review before
+code: the bug would have shown up as odd model behaviour weeks later.
+Also wrote RULES_AND_SCENARIOS.md: the rule catalog, fraud scenarios
+each paired with a legitimate twin, and a time-split evaluation plan
+with a rules/model/combined ablation.
