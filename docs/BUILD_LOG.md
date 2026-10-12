@@ -47,3 +47,14 @@ code: the bug would have shown up as odd model behaviour weeks later.
 Also wrote RULES_AND_SCENARIOS.md: the rule catalog, fraud scenarios
 each paired with a legitimate twin, and a time-split evaluation plan
 with a rules/model/combined ablation.
+
+## Entry 6: Python scaffold and core models
+
+Installed Python 3.13 per-user on a locked-down laptop (3.12 no longer
+ships Windows installers), scaffolded a src-layout package with pinned
+dependencies captured by pip freeze. Windows ships no timezone database,
+so tzdata is an explicit dependency; without it ZoneInfo fails on
+Windows. Wrote the core Pydantic models with extra=forbid (a label field
+on an event is a validation error, enforcing ADR-002), strict integer
+money, timezone-aware UTC datetimes, immutable instances, and the static
+FX table from ADR-008, all with unit tests.
